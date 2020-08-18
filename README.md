@@ -45,3 +45,5 @@ plot the resulting trajectory
 python evaluate_ate.py rgbd_dataset_freiburg2_desk/groundtruth.txt your_trajectory.txt --plot PLOT
 ```
 
+
+![image](img/pose_op_level4_with_auto_lc.png)
