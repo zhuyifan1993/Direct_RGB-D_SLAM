@@ -13,16 +13,16 @@ def calcResiduals(IRef, DRef, I, D, xi, K, norm_param, use_hubernorm):
     yImg = np.zeros_like(IRef) - 10
     Depth1 = np.zeros_like(DRef)
 
-    for x in range(IRef.shape[0]):
-        for y in range(IRef.shape[1]):
-            p = DRef[x, y] * np.dot(KInv, np.array([x, y, 1]))
+    for x in range(IRef.shape[1]):
+        for y in range(IRef.shape[0]):
+            p = DRef[y, x] * np.dot(KInv, np.array([x, y, 1]))
 
             pTrans = np.dot(K, np.dot(R, p) + t)
-            Depth1[x, y] = pTrans[2]
+            Depth1[y, x] = pTrans[2]
 
-            if (pTrans[2] > 0) & (DRef[x, y] > 0):
-                xImg[x, y] = pTrans[0] / pTrans[2]
-                yImg[x, y] = pTrans[1] / pTrans[2]
+            if (pTrans[2] > 0) & (DRef[y, x] > 0):
+                xImg[y, x] = pTrans[0] / pTrans[2]
+                yImg[y, x] = pTrans[1] / pTrans[2]
 
     # interpolation method 1
     # xx, yy = np.mgrid[:I.shape[0], :I.shape[1]]
@@ -33,8 +33,8 @@ def calcResiduals(IRef, DRef, I, D, xi, K, norm_param, use_hubernorm):
     yy = np.arange(0, I.shape[1])
     f = interpolate.RegularGridInterpolator((xx, yy), I, bounds_error=False)
     # g = interpolate.RegularGridInterpolator((xx, yy), D, bounds_error=False)
-    interp_I = f((xImg.real.ravel(), yImg.real.ravel())).reshape(I.shape)
-    # interp_D = g((xImg.real.ravel(), yImg.real.ravel())).reshape(D.shape)
+    interp_I = f((yImg.real.ravel(), xImg.real.ravel())).reshape(I.shape)
+    # interp_D = g((yImg.real.ravel(), xImg.real.ravel())).reshape(D.shape)
 
     # residuals = IRef - interp_I + Depth1 - interp_D
     residuals = IRef - interp_I
